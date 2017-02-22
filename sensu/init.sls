@@ -8,6 +8,13 @@ python-apt:
       - pkgrepo: sensu
 {% endif %}
 
+{% if grains['os_family'] == 'RedHat' %}
+/etc/yum/vars/osmajorrelease:
+  file.managed:
+    - source: salt://sensu/files/yum/osmajorrelease.template
+    - template: jinja
+{% endif %}
+
 sensu:
   {% if repos.get('enabled') %}
   pkgrepo.managed:
@@ -28,7 +35,6 @@ sensu:
   {% endif %}
   pkg:
     - installed
-
 
 {% if grains['os_family'] != 'Windows' %}
 old sensu repository:
