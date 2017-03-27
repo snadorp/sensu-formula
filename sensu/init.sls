@@ -1,9 +1,13 @@
 {% from "sensu/repos_map.jinja" import repos with context -%}
 
 {% if grains['os_family'] == 'Debian' %}
-python-apt:
-  pkg:
-    - installed
+sensu-extra-packages:
+  pkg.installed:
+    - names:
+      - python-apt
+      {% if repos.get('enabled') and repos.get('name').startswith("https") %}
+      - apt-transport-https
+      {% endif %}
     - require_in:
       - pkgrepo: sensu
 {% endif %}
