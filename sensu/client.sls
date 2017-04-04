@@ -77,15 +77,6 @@ sensu_checks_file:
     - watch_in:
       - service: sensu-client
 
-sensu-client:
-  service.running:
-    - enable: True
-    - require:
-      - file: /etc/sensu/conf.d/client.json
-      - file: /etc/sensu/conf.d/rabbitmq.json
-    - watch:
-      - file: /etc/sensu/conf.d/*
-
 {% if grains['os_family'] != 'Windows' %}
 /etc/default/sensu:
   file.replace:
@@ -132,3 +123,11 @@ install_{{ gem_name }}:
     - source: {{ salt['pillar.get']('sensu:client:gem_source', None) }}
 {% endfor %}
 
+sensu-client:
+  service.running:
+    - enable: True
+    - require:
+      - file: /etc/sensu/conf.d/client.json
+      - file: /etc/sensu/conf.d/rabbitmq.json
+    - watch:
+      - file: /etc/sensu/conf.d/*
