@@ -14,6 +14,7 @@ sensu:
     nagios_plugins: true
     redact:
       - password
+    gem_proxy: http://192.168.1.1:3128/
   rabbitmq:
     host: 10.0.0.1
     user: sensu
