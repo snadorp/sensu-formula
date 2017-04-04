@@ -22,6 +22,21 @@ sensu_enable_windows_service:
     - unless: 'sc query sensu-client'
 {% endif %}
 
+{%- if salt['pillar.get']('sensu:checks') %}
+
+sensu_checks_file:
+  file.serialize:
+    - name: {{ sensu.paths.checks_file }}
+    - dataset:
+        checks: {{ salt['pillar.get']('sensu:checks') }}
+    - formatter: json
+    - require:
+      - pkg: sensu
+    - watch_in:
+      - service: sensu-client
+
+{%- endif %}
+
 /etc/sensu/conf.d/client.json:
   file.serialize:
     - formatter: json
@@ -117,17 +132,3 @@ install_{{ gem_name }}:
     - source: {{ salt['pillar.get']('sensu:client:gem_source', None) }}
 {% endfor %}
 
-{%- if salt['pillar.get']('sensu:checks') %}
-
-sensu_checks_file:
-  file.serialize:
-    - name: {{ sensu.paths.checks_file }}
-    - dataset:
-        checks: {{ salt['pillar.get']('sensu:checks') }}
-    - formatter: json
-    - require:
-      - pkg: sensu
-    - watch_in:
-      - service: sensu-client
-
-{%- endif %}
