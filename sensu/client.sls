@@ -23,7 +23,6 @@ sensu_enable_windows_service:
 {% endif %}
 
 {%- if salt['pillar.get']('sensu:standalone_checks') %}
-
 sensu_standalone_checks_file:
   file.serialize:
     - name: {{ sensu.paths.standalone_checks_file }}
@@ -34,7 +33,10 @@ sensu_standalone_checks_file:
       - pkg: sensu
     - watch_in:
       - service: sensu-client
-
+{%- else %}
+sensu_standalone_checks_file:
+  file.absent:
+    - name: {{ sensu.paths.standalone_checks_file }}
 {%- endif %}
 
 /etc/sensu/conf.d/client.json:

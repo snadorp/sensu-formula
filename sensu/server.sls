@@ -16,7 +16,6 @@ include:
       - service: sensu-server
 
 {%- if salt['pillar.get']('sensu:checks') %}
-
 sensu_subscription_checks_file:
   file.serialize:
     - name: {{ sensu.paths.checks_file }}
@@ -27,7 +26,10 @@ sensu_subscription_checks_file:
       - pkg: sensu
     - watch_in:
       - service: sensu-server
-
+{%- else %}
+sensu_subscription_checks_file:
+  file.absent:
+    - name: {{ sensu.paths.checks_file }}
 {%- endif %}
 
 {%- if salt['pillar.get']('sensu:handlers') %}
