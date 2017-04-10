@@ -22,13 +22,13 @@ sensu_enable_windows_service:
     - unless: 'sc query sensu-client'
 {% endif %}
 
-{%- if salt['pillar.get']('sensu:checks') %}
+{%- if salt['pillar.get']('sensu:standalone_checks') %}
 
-sensu_checks_file:
+sensu_standalone_checks_file:
   file.serialize:
-    - name: {{ sensu.paths.checks_file }}
+    - name: {{ sensu.paths.standalone_checks_file }}
     - dataset:
-        checks: {{ salt['pillar.get']('sensu:checks') }}
+        checks: {{ salt['pillar.get']('sensu:standalone_checks') }}
     - formatter: json
     - require:
       - pkg: sensu

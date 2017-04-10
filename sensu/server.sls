@@ -17,7 +17,7 @@ include:
 
 {%- if salt['pillar.get']('sensu:checks') %}
 
-sensu_checks_file:
+sensu_subscription_checks_file:
   file.serialize:
     - name: {{ sensu.paths.checks_file }}
     - dataset:
