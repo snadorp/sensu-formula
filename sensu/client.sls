@@ -105,8 +105,6 @@ install_{{ gem_name }}:
     - name: {{ gem_name }}
     {% if sensu.client.embedded_ruby %}
     - gem_bin: /opt/sensu/embedded/bin/gem
-    {% else %}
-    - gem_bin: None
     {% endif %}
     {% if gem.version is defined %}
     - version: {{ gem.version }}
