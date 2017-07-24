@@ -15,13 +15,30 @@ include:
     - watch_in:
       - service: sensu-server
 
+{%- if salt['pillar.get']('sensu:checks') %}
+sensu_subscription_checks_file:
+  file.serialize:
+    - name: {{ sensu.paths.checks_file }}
+    - dataset:
+        checks: {{ salt['pillar.get']('sensu:checks') }}
+    - formatter: json
+    - require:
+      - pkg: sensu
+    - watch_in:
+      - service: sensu-server
+{%- else %}
+sensu_subscription_checks_file:
+  file.absent:
+    - name: {{ sensu.paths.checks_file }}
+{%- endif %}
+
 {%- if salt['pillar.get']('sensu:handlers') %}
 
 sensu_handlers_file:
   file.serialize:
     - name: {{ sensu.paths.handlers_file }}
     - dataset_pillar: sensu:handlers
-    - formatter: JSON
+    - formatter: json
     - require:
       - pkg: sensu
     - watch_in:

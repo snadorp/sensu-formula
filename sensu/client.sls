@@ -22,6 +22,23 @@ sensu_enable_windows_service:
     - unless: 'sc query sensu-client'
 {% endif %}
 
+{%- if salt['pillar.get']('sensu:standalone_checks') %}
+sensu_standalone_checks_file:
+  file.serialize:
+    - name: {{ sensu.paths.standalone_checks_file }}
+    - dataset:
+        checks: {{ salt['pillar.get']('sensu:standalone_checks') }}
+    - formatter: json
+    - require:
+      - pkg: sensu
+    - watch_in:
+      - service: sensu-client
+{%- else %}
+sensu_standalone_checks_file:
+  file.absent:
+    - name: {{ sensu.paths.standalone_checks_file }}
+{%- endif %}
+
 /etc/sensu/conf.d/client.json:
   file.serialize:
     - formatter: json
@@ -66,15 +83,6 @@ sensu_enable_windows_service:
       - service: sensu-client
     - watch_in:
       - service: sensu-client
-
-sensu-client:
-  service.running:
-    - enable: True
-    - require:
-      - file: /etc/sensu/conf.d/client.json
-      - file: /etc/sensu/conf.d/rabbitmq.json
-    - watch:
-      - file: /etc/sensu/conf.d/*
 
 {% if grains['os_family'] != 'Windows' %}
 /etc/default/sensu:
@@ -122,17 +130,11 @@ install_{{ gem_name }}:
     - source: {{ salt['pillar.get']('sensu:client:gem_source', None) }}
 {% endfor %}
 
-{%- if salt['pillar.get']('sensu:checks') %}
-
-sensu_checks_file:
-  file.serialize:
-    - name: {{ sensu.paths.checks_file }}
-    - dataset:
-        checks: {{ salt['pillar.get']('sensu:checks') }}
-    - formatter: json
+sensu-client:
+  service.running:
+    - enable: True
     - require:
-      - pkg: sensu
-    - watch_in:
-      - service: sensu-client
-
-{%- endif %}
+      - file: /etc/sensu/conf.d/client.json
+      - file: /etc/sensu/conf.d/rabbitmq.json
+    - watch:
+      - file: /etc/sensu/conf.d/*
