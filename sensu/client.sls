@@ -46,6 +46,11 @@ sensu_enable_windows_service:
           {% if sensu.client.get("redact") %}
           redact: {{ sensu.client.redact }}
           {% endif %}
+          {% if sensu.client.get("override_attributes") %}
+          {% for attribute, values in sensu.client.override_attributes.items() %}
+          {{ attribute }}: {{ values|json }}
+          {% endfor %}
+          {% endif %}
     - require:
       - pkg: sensu
 
