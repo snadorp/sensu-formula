@@ -85,18 +85,16 @@ sensu_handlers_file:
 install_{{ gem_name }}:
   gem.installed:
     - name: {{ gem_name }}
-    {% if sensu.client.embedded_ruby %}
+    {% if sensu.server.embedded_ruby %}
     - gem_bin: /opt/sensu/embedded/bin/gem
-    {% else %}
-    - gem_bin: None
     {% endif %}
     {% if gem.version is defined %}
     - version: {{ gem.version }}
     {% endif %}
     - rdoc: False
     - ri: False
-    - proxy: {{ salt['pillar.get']('sensu:client:gem_proxy', None) }}
-    - source: {{ salt['pillar.get']('sensu:client:gem_source', None) }}
+    - proxy: {{ salt['pillar.get']('sensu:server:gem_proxy') }}
+    - source: {{ salt['pillar.get']('sensu:server:gem_source') }}
 {% endfor %}
 
 sensu-server:
